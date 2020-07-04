@@ -1,0 +1,19 @@
+#issueRows:hover{
+ 
+    border-left: 5px solid #2ECC71;
+}
+#issueRows {
+ 
+    height: 30px;
+}
+#issueTable {
+    margin-left: 130px;
+    width:30%;
+    border: 2px solid black;
+    border-radius: 2rem;
+}
+
+
+
+
+

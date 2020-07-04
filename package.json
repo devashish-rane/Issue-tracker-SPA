@@ -1,0 +1,15 @@
+{
+  "name": "it",
+  "version": "1.0.0",
+  "description": "Simple React issue tracker",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "Devashish Rane <ranedevashish2@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
