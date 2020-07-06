@@ -1,6 +1,10 @@
 const express = require("express");
 const bodyParser = require("body-parser");  //for JSON API
 
+//import local validation module 
+const Validator  = require("./validation");
+
+
 //create express app instance
 const app = express();
 
@@ -37,6 +41,12 @@ app.post("/issues",(req,res)=>{
     newPostedIssue.created = new Date();
     if(!newPostedIssue.status)
         newPostedIssue.status = "New";
+
+    let err = Validator.validateIssue(newPostedIssue);
+    if(err){
+        res.status(422).json({ message: `Invalid requrest: ${err}` });
+        return;
+    }    
     data.push(newPostedIssue);
     
     res.json(newPostedIssue);
