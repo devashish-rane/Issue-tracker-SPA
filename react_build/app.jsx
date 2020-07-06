@@ -91,6 +91,29 @@ class IssueTable extends React.Component{
 
 
 class IssueTracker extends React.Component{
+   constructor(){
+       super();
+       this.state = {issues : data};
+
+       setTimeout( this.createTestIssue.bind(this),2000);
+   } 
+   
+   
+   
+   createIssue(newIssue){
+       let tempIssueList = this.state.issues.slice();
+       newIssue.id = this.state.issues.length +1 ;
+       tempIssueList.push(newIssue);
+       this.setState({ issues  : tempIssueList });
+   }
+
+   createTestIssue(){
+       this.createIssue({
+        status: 'New', owner: 'Pieta', created: new Date(),
+        title: 'Completion date should be optional',
+        });
+   }
+
    render(){
        return (
            <div>
@@ -98,7 +121,7 @@ class IssueTracker extends React.Component{
                <hr/>
                <IssueAdd/>
                <IssueFilter/>
-               <IssueTable issues = {data}/>
+               <IssueTable issues = {this.state.issues} />
            </div>
        );
    }
