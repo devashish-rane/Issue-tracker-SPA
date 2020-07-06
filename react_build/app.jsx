@@ -1,25 +1,37 @@
 class IssueAdd extends React.Component{
+    constructor(){
+        super();
+        this.handlerSubmit = this.handlerSubmit.bind(this);
+    }
+
+    handlerSubmit(e){
+        e.preventDefault();
+        let form = document.forms.issueAdd; //name same  as component's form 
+        this.props.createIssue({
+            owner: form.owner.value,
+            title: form.title.value,
+            status: 'New',
+            created: new Date(),
+            });
+            console.log("created");
+            
+            //after adding the values clear the form for next input
+            form.owner.value = ""; form.title.value = "";
+    }
+
     render(){
         return (
-            <h1>This is IssueAdd</h1>
+            <div>
+                <form name="issueAdd" onSubmit={this.handlerSubmit} >
+                    <input className="input" type="text" name="owner" placeholder="Owner" />
+                    <input className="input" type="text" name="title" placeholder="Title" />
+                    <button>Add Issue </button>
+                </form>    
+            </div>
         );
     }
 }
 
-//Demo server data
-const data = [
-    {
-    id: 1, status: 'Open', owner: 'Ravan',
-    created: new Date('2016-08-15'), effort: 5, completionDate: undefined,
-    title: 'Error in console when clicking Add',
-    },
-    {
-    id: 2, status: 'Assigned', owner: 'Eddie',
-    created: new Date('2016-08-16'), effort: 14, 
-   completionDate: new Date('2016-08-30'),
-    title: 'Missing bottom border on panel',
-    }
-];
 
 
 
@@ -93,12 +105,25 @@ class IssueTable extends React.Component{
 class IssueTracker extends React.Component{
    constructor(){
        super();
-       this.state = {issues : data};
+       this.state = {issues : []};
+       
+    //    this.createTestIssue=this.createTestIssue.bind(this)
+    //    setTimeout( this.createTestIssue,2000);
 
-       setTimeout( this.createTestIssue.bind(this),2000);
+       //for transfering the method to child it must be bind to origin class
+       this.createIssue=this.createIssue.bind(this);
+   
    } 
    
+   componentDidMount(){
+       this.loadData();  
+   }
    
+   loadData() {
+    setTimeout(() => {
+    this.setState({ issues: data });
+    }, 500);
+    }
    
    createIssue(newIssue){
        let tempIssueList = this.state.issues.slice();
@@ -107,19 +132,20 @@ class IssueTracker extends React.Component{
        this.setState({ issues  : tempIssueList });
    }
 
-   createTestIssue(){
-       this.createIssue({
-        status: 'New', owner: 'Pieta', created: new Date(),
-        title: 'Completion date should be optional',
-        });
-   }
+//    createTestIssue(){
+//        this.createIssue({
+//         status: 'New', owner: 'Pieta', created: new Date(),
+//         title: 'Completion date should be optional',
+//         });
+//    }
 
    render(){
        return (
            <div>
                <h1>Issue Tracker</h1>
                <hr/>
-               <IssueAdd/>
+               <IssueAdd createIssue={this.createIssue} />
+               {/* <button onClick={this.createTestIssue}>Add Issue</button> */}
                <IssueFilter/>
                <IssueTable issues = {this.state.issues} />
            </div>
@@ -132,3 +158,18 @@ class IssueTracker extends React.Component{
 
 let root = document.getElementById("root");
 ReactDOM.render(<IssueTracker/> , root);
+
+//Demo server data
+const data = [
+    {
+    id: 1, status: 'Open', owner: 'Ravan',
+    created: new Date('2016-08-15'), effort: 5, completionDate: undefined,
+    title: 'Error in console when clicking Add',
+    },
+    {
+    id: 2, status: 'Assigned', owner: 'Eddie',
+    created: new Date('2016-08-16'), effort: 14, 
+   completionDate: new Date('2016-08-30'),
+    title: 'Missing bottom border on panel',
+    }
+];
