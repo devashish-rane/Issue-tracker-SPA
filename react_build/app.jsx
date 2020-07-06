@@ -22,9 +22,9 @@ class IssueAdd extends React.Component{
     render(){
         return (
             <div>
-                <form name="issueAdd" onSubmit={this.handlerSubmit} >
+                <form name="issueAdd" onSubmit={this.handlerSubmit} method="post" >
                     <input className="input" type="text" name="owner" placeholder="Owner" />
-                    <input className="input" type="text" name="title" placeholder="Title" />
+                    <input className    ="input" type="text" name="title" placeholder="Title" />
                     <button>Add Issue </button>
                 </form>    
             </div>
@@ -120,16 +120,49 @@ class IssueTracker extends React.Component{
    }
    
    loadData() {
-    setTimeout(() => {
-    this.setState({ issues: data });
-    }, 500);
+    //    tried to model server data
+    // setTimeout(() => {
+    // this.setState({ issues: data });
+    // }, 500);
+      fetch("/issues").then(response=>{
+          return response.json();
+      }).then(data=>{
+        console.log("Total count of records:", data._metadata.total_issues);
+        //NOTE : my process all entries of data using 
+        //forEach or map callback
+                                        //if not included cause toDateString function N.D error due to
+                                        //dates being undefined
+                                        data.clientDataFeed.forEach(issue => {
+                                        issue.created = new Date(issue.created);
+                                        if (issue.completionDate)
+                                        issue.completionDate = new Date(issue.completionDate);
+                                        });
+        this.setState({issues : data.clientDataFeed});
+      }).catch(err=>{
+        console.log(err);
+      });   
     }
    
    createIssue(newIssue){
-       let tempIssueList = this.state.issues.slice();
-       newIssue.id = this.state.issues.length +1 ;
-       tempIssueList.push(newIssue);
-       this.setState({ issues  : tempIssueList });
+    //    let tempIssueList = this.state.issues.slice();
+    //    newIssue.id = this.state.issues.length +1 ;
+    //    tempIssueList.push(newIssue);
+    //    this.setState({ issues  : tempIssueList });
+    fetch('/issues', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newIssue),
+        }).then(response => 
+        response.json()
+        ).then(updatedIssue=>{
+            updatedIssue.created = new Date(updatedIssue.created);
+            if (updatedIssue.completionDate)
+                    updatedIssue.completionDate = new Date(updatedIssue.completionDate);
+            const newIssues = this.state.issues.concat(updatedIssue); //concat combine two opeations slice and push
+            this.setState({ issues: newIssues });
+        }).catch(err => {
+            alert("Error in sending data to server: " + err.message);
+        });
    }
 
 //    createTestIssue(){
@@ -159,17 +192,18 @@ class IssueTracker extends React.Component{
 let root = document.getElementById("root");
 ReactDOM.render(<IssueTracker/> , root);
 
-//Demo server data
-const data = [
-    {
-    id: 1, status: 'Open', owner: 'Ravan',
-    created: new Date('2016-08-15'), effort: 5, completionDate: undefined,
-    title: 'Error in console when clicking Add',
-    },
-    {
-    id: 2, status: 'Assigned', owner: 'Eddie',
-    created: new Date('2016-08-16'), effort: 14, 
-   completionDate: new Date('2016-08-30'),
-    title: 'Missing bottom border on panel',
-    }
-];
+
+// //Demo server data
+// const data = [
+//     {
+//     id: 1, status: 'Open', owner: 'Ravan',
+//     created: new Date('2016-08-15'), effort: 5, completionDate: undefined,
+//     title: 'Error in console when clicking Add',
+//     },
+//     {
+//     id: 2, status: 'Assigned', owner: 'Eddie',
+//     created: new Date('2016-08-16'), effort: 14, 
+//    completionDate: new Date('2016-08-30'),
+//     title: 'Missing bottom border on panel',
+//     }
+// ];
